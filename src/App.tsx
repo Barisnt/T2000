@@ -1,25 +1,23 @@
 import { Button } from 'antd';
-import get from 'axios';
 import { useState } from 'react';
+import { useAppDispatch, useAppSelector } from './store';
+import { ytsSearch } from './store/ytsSearchSlice';
+
 function App() {
   const [responseState, setResponseState] = useState('ğğğ');
-
+  const dispatch = useAppDispatch();
+  const isLoading = useAppSelector((store) => store.yts.isLoading);
   return (
     <>
       <div>selamun aleyke </div>
       <Button
         onClick={() => {
-          get('https://yts.mx/api/v2/list_movies.json?quality=3D').then(
-            (response) => {
-              setResponseState(JSON.stringify(response));
-              console.log(response);
-            }
-          );
+          dispatch(ytsSearch());
         }}
       >
         merhabalar aq
       </Button>
-      <div>{responseState}</div>
+      <div>{isLoading}</div>
     </>
   );
 }
