@@ -55,18 +55,19 @@ export const ytsSearch = createAsyncThunk(
       .yts as IYTSSearchState;
     const url =
       state.baseUrl +
-      ((state.page ? `page=${state.page}` : '') +
-        (state.quality ? `quality=${state.quality}` : '') +
-        (state.minimum_rating ? `minimum_rating=${state.minimum_rating}` : '') +
-        (state.query_term ? `query_term=${state.query_term}` : '') +
-        (state.sort_by ? `sort_by=${state.sort_by}` : '') +
-        (state.order_by ? `order_by=${state.order_by}` : '') +
+      ((state.page ? `?page=${state.page}` : '') +
+        (state.quality ? `?quality=${state.quality}` : '') +
+        (state.minimum_rating
+          ? `?minimum_rating=${state.minimum_rating}`
+          : '') +
+        (state.query_term ? `?query_term=${state.query_term}` : '') +
+        (state.sort_by ? `?sort_by=${state.sort_by}` : '') +
+        (state.order_by ? `?order_by=${state.order_by}` : '') +
         (state.with_rt_ratings
-          ? `with_rt_ratings=${state.with_rt_ratings}`
+          ? `?with_rt_ratings=${state.with_rt_ratings}`
           : ''));
-    const response = await get(url).then((response) =>
-      JSON.parse(response.data)
-    );
+    const response = await get(url);
+
     return response;
   }
 );
@@ -123,17 +124,14 @@ const ytsSlice = createSlice({
       state.isLoading = true;
     }),
       builder.addCase(ytsSearch.rejected, (state) => {
-        state.isLoading = true;
+        state.isLoading = false;
       });
 
-    builder.addCase(
-      ytsSearch.fulfilled,
-      (state, action: PayloadAction<IYTSSearchResponse>) => {
-        state.isLoading = true;
-        state.searchResponse = action.payload;
-        console.log('act', action.payload);
-      }
-    );
+    builder.addCase(ytsSearch.fulfilled, (state, action) => {
+      state.isLoading = false;
+      state.searchResponse = action.payload.data.data;
+      console.log('act', action.payload.data.data);
+    });
   }
 });
 
