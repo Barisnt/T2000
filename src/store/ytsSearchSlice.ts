@@ -8,7 +8,7 @@ interface IYTSSearchResponse {
   page_number: number;
   movies: any[];
 }
-interface IYTSSearchState {
+export interface IYTSSearchState {
   baseUrl: string;
   page: number | undefined;
   quality: '720p' | '1080p' | '2160p' | '3D' | undefined;
@@ -31,7 +31,7 @@ interface IYTSSearchState {
 }
 
 const initialYTSSearchState: IYTSSearchState = {
-  baseUrl: 'https://yts.mx/api/v2/list_movies.json',
+  baseUrl: 'https://yts.mx/api/v2/list_movies.json?',
   page: undefined,
   quality: undefined,
   minimum_rating: undefined,
@@ -55,16 +55,16 @@ export const ytsSearch = createAsyncThunk(
       .yts as IYTSSearchState;
     const url =
       state.baseUrl +
-      ((state.page ? `?page=${state.page}` : '') +
-        (state.quality ? `?quality=${state.quality}` : '') +
+      ((state.page ? `&page=${state.page}` : '') +
+        (state.quality ? `&quality=${state.quality}` : '') +
         (state.minimum_rating
-          ? `?minimum_rating=${state.minimum_rating}`
+          ? `&minimum_rating=${state.minimum_rating}`
           : '') +
-        (state.query_term ? `?query_term=${state.query_term}` : '') +
-        (state.sort_by ? `?sort_by=${state.sort_by}` : '') +
-        (state.order_by ? `?order_by=${state.order_by}` : '') +
+        (state.query_term ? `&query_term=${state.query_term}` : '') +
+        (state.sort_by ? `&sort_by=${state.sort_by}` : '') +
+        (state.order_by ? `&order_by=${state.order_by}` : '') +
         (state.with_rt_ratings
-          ? `?with_rt_ratings=${state.with_rt_ratings}`
+          ? `&with_rt_ratings=${state.with_rt_ratings}`
           : ''));
     const response = await get(url);
 
@@ -76,17 +76,14 @@ const ytsSlice = createSlice({
   name: 'YTS',
   initialState: initialYTSSearchState,
   reducers: {
-    setSearchPage: (
+    setSearchPage: (state, action: PayloadAction<IYTSSearchState['page']>) => {
+      state.page = action.payload;
+    },
+    setSearchQuality: (
       state,
       action: PayloadAction<IYTSSearchState['quality']>
     ) => {
       state.quality = action.payload;
-    },
-    setSearchQuality: (
-      state,
-      action: PayloadAction<IYTSSearchState['page']>
-    ) => {
-      state.page = action.payload;
     },
     setSearchMinimumRating: (
       state,
